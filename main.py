@@ -2,9 +2,15 @@ import requests
 import urlshortner as urlsh
 
 
-def get_movie_details(movies_json, movie_position=0):
-    # Movie name, movie synopsis, movie rating,run time,genres
-    movie_details = ''
+''' DRIVER CODE FOR MOVIE SUGGESTIONS/RECOMMENDATIONS '''
+def recommend_movies(movie_name):
+    pass
+
+
+''' DRIVER CODE FOR GETTING DETAILS OF THE GIVEN MOVIE '''
+def get_movie_details(movies_json, movie_position=0,summary=True):
+    # Returns Movie name, movie synopsis, movie rating,run time,genres
+    movie_details = '\n'
     movie_title = movies_json['data']['movies'][movie_position]['title_long']
     movie_rating = 'Movie rating : '+str(movies_json['data']['movies'][movie_position]['rating'])
     movie_runtime = 'Run Time: '+str(movies_json['data']['movies'][movie_position]['runtime'])+'mins'
@@ -12,14 +18,38 @@ def get_movie_details(movies_json, movie_position=0):
     movie_genres = " ".join(movie_genres)
     movie_genres = movie_genres.replace(" ",',')
     movie_genres = "Movie Genres : "+movie_genres
-    movie_summary = movies_json['data']['movies'][movie_position]['summary']
-    blah_tuple = (movie_title,movie_summary,movie_runtime,movie_rating,movie_genres)
+    if summary:
+        movie_summary = movies_json['data']['movies'][movie_position]['summary']
+        blah_tuple = (movie_title,movie_summary,movie_runtime,movie_rating,movie_genres)
+    else:
+        blah_tuple = (movie_title,movie_runtime,movie_rating,movie_genres)
     for item in blah_tuple:
         movie_details += item+'\n\n'
     return movie_details
+
+''' DRIVER CODE FOR GETTING LATEST RELEASED MOVIES IN SPECIFC GENRE '''
+def get_latest_movies_by_genre(sort_value='year'):
+    print("\nAvaialble Genres:\n")
+    genres_tuple = ('Action','Adventure','Animation','Biography','Comedy','Crime','Drame','Fantasy','History','Horror','Mystery','Romance','Sci-Fi','Thriller','War','Wester')
+    for i,genre in enumerate(genres_tuple):
+        print(i+1,genre)
+    user_genres_choice = int(input("\nChoose one: "))
+    genre = genres_tuple[user_genres_choice-1]
+    genre_movie_query = f'https://yts.torrentbay.to/api/v2/list_movies.json?minimum_rating=6&genre={genre}&sort_by={sort_value}&quality=1080p&limit=5'
+    latest_15_movies = requests.get(genre_movie_query).json()
+    latest_15_moviess = latest_15_movies['data']['movies']
+    latest_movies_string = ''
+    for i in range(len(latest_15_moviess)):
+        latest_movies_string += get_movie_details(latest_15_movies, movie_position=i,summary=False)
+        print(latest_movies_string)
+        
+        
+''' DRIVER CODE FOR GETTING HIGHEST RATED MOVIES IN SPECIFIED GENRE '''
+def get_highest_rated_movies_by_genre():
+    get_latest_movies_by_genre(sort_value='rating')
     
-    
-''' DRIVER CODE TO GET THE TORREN INFORMATION'''
+
+''' DRIVER CODE TO GET THE TORRENT INFORMATION'''
 def get_torrent(movies_json,movie_position=0):
     movie_title = movies_json['data']['movies'][movie_position]['title_long']
     print("\nGetting Torrent Information about : "+movie_title)
@@ -103,11 +133,11 @@ def main(movie_name,user_option_of_app_use):
 
 if __name__=='__main__':
     #movie_name = str(input("Enter Movie Name: "))
-    print("1.Download Movie\n2.Get Movie Details\n3.Get Similar Movie Recommendations\n4.Latest Releases\n5.Search Movies By Genre")
-    user_option_of_app_use = int(input("\nEnter your choice: "))
+    #print("1.Download Movie\n2.Get Movie Details\n3.Get Similar Movie Recommendations\n4.Latest Releases\n5.Search Movies By Genre")
+    #user_option_of_app_use = int(input("\nEnter your choice: "))
     movie_name = 'Inception'
-    main(movie_name,user_option_of_app_use)
-
+    #main(movie_name,user_option_of_app_use)
+    get_latest_movies_by_genre()
 
 
 
