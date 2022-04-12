@@ -30,18 +30,18 @@ def get_movie_details(movies_json, movie_position=0,summary=True):
 ''' DRIVER CODE FOR GETTING LATEST RELEASED MOVIES IN SPECIFC GENRE '''
 def get_latest_movies_by_genre(sort_value='year'):
     print("\nAvaialble Genres:\n")
-    genres_tuple = ('Action','Adventure','Animation','Biography','Comedy','Crime','Drame','Fantasy','History','Horror','Mystery','Romance','Sci-Fi','Thriller','War','Wester')
+    genres_tuple = ('Action','Adventure','Animation','Biography','Comedy','Crime','Drame','Fantasy','History','Horror','Mystery','Romance','Sci-Fi','Thriller','War','Western')
     for i,genre in enumerate(genres_tuple):
         print(i+1,genre)
     user_genres_choice = int(input("\nChoose one: "))
     genre = genres_tuple[user_genres_choice-1]
-    genre_movie_query = f'https://yts.torrentbay.to/api/v2/list_movies.json?minimum_rating=6&genre={genre}&sort_by={sort_value}&quality=1080p&limit=5'
+    genre_movie_query = f'https://yts.torrentbay.to/api/v2/list_movies.json?minimum_rating=6&genre={genre}&sort_by={sort_value}&quality=1080p&limit=15'
     latest_15_movies = requests.get(genre_movie_query).json()
     latest_15_moviess = latest_15_movies['data']['movies']
     latest_movies_string = ''
     for i in range(len(latest_15_moviess)):
         latest_movies_string += get_movie_details(latest_15_movies, movie_position=i,summary=False)
-        print(latest_movies_string)
+    print(latest_movies_string)
         
         
 ''' DRIVER CODE FOR GETTING HIGHEST RATED MOVIES IN SPECIFIED GENRE '''
@@ -116,6 +116,9 @@ def main(movie_name,user_option_of_app_use):
         elif user_option_of_app_use == 2:
             movie_details = get_movie_details(movies_json, user_movie_choice-1)
             print(movie_details)
+        
+        elif user_option_of_app_use == 3:
+                print("Functionality yet to be added")
     
     else:
         print("Did you mean "+movie_title_ls+" ?")
@@ -124,20 +127,30 @@ def main(movie_name,user_option_of_app_use):
             if user_option_of_app_use==1:
                 torrent_link = get_torrent(movies_json)
                 print(torrent_link)
+            
             elif user_option_of_app_use == 2:
                 movie_details = get_movie_details(movies_json)
                 print(movie_details)
-        else:
-            print("Try again form Start, enter the movie correctly")
-                
+            
+            elif user_option_of_app_use == 3:
+                print("Functionality yet to be added")
+
 
 if __name__=='__main__':
-    #movie_name = str(input("Enter Movie Name: "))
-    #print("1.Download Movie\n2.Get Movie Details\n3.Get Similar Movie Recommendations\n4.Latest Releases\n5.Search Movies By Genre")
-    #user_option_of_app_use = int(input("\nEnter your choice: "))
-    movie_name = 'Inception'
-    #main(movie_name,user_option_of_app_use)
-    get_latest_movies_by_genre()
+    print("1.Download Movie\n2.Get Movie Details\n3.Get Similar Movie Recommendations\n4.Latest Releases By Genre \n5.Highest Rated Movies By Genre")
+    user_option_of_app_use = int(input("\nEnter your choice: "))
+    
+    if user_option_of_app_use == 4:
+        get_latest_movies_by_genre()
+    
+    elif user_option_of_app_use == 5:
+        get_highest_rated_movies_by_genre()
+    
+    else:
+        #movie_name = str(input("Enter Movie Name: "))
+        movie_name = 'Inception'
+        main(movie_name,user_option_of_app_use)
+    
 
 
 
