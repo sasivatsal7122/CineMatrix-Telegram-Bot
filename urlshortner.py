@@ -8,9 +8,9 @@ def get_shorturl(long_url):
         auth_res = requests.post("https://api-ssl.bitly.com/oauth/access_token", auth=(username, password))
         if auth_res.status_code == 200:
             access_token = auth_res.content.decode()
-            #print("[!] Got access token:", access_token)
+            #print(access_token)
         else:
-            #print("[!] Cannot get access token, exiting...")
+            #print(" Error getting Cannot get access token")
             exit()
             
         headers = {"Authorization": f"Bearer {access_token}"}
@@ -20,7 +20,7 @@ def get_shorturl(long_url):
             groups_data = groups_res.json()['groups'][0]
             guid = groups_data['guid']
         else:
-            #print("[!] Cannot get GUID, exiting...")
+            #print("Error getting GUID")
             exit()
             
         shorten_res = requests.post("https://api-ssl.bitly.com/v4/shorten", json={"group_guid": guid, "long_url": long_url}, headers=headers)
