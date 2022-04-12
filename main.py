@@ -3,16 +3,22 @@ import urlshortner as urlsh
 
 ''' DRIVER CODE TO GET THE TORREN INFORMATION'''
 def get_torrent(movies_json,movie_position=0):
+    
     print("\nGetting Torrent Information about : "+movies_json['data']['movies'][movie_position]['title_long'])
     size_ls = [];quality_ls = [];torrent_link_ls = []
+    
     torrents = movies_json['data']['movies'][movie_position]['torrents']
+    
     for i in range(len(torrents)):
         size_ls.append(torrents[i]['size'])
         quality_ls.append(torrents[i]['quality'])
         torrent_link_ls.append(torrents[i]['url'])
+    
     for i in range(len(size_ls)):
         print(i+1,quality_ls[i]+' --> '+size_ls[i])
+    
     user_quality_choice = int(input("\nEnter Your Quality choice to download: "))
+    
     print("\nGetting requested torrent....")
     torrent_link = urlsh.get_shorturl(torrent_link_ls[user_quality_choice-1])
     return torrent_link
@@ -20,13 +26,17 @@ def get_torrent(movies_json,movie_position=0):
 
 ''' DRIVER CODE TO GET THE NAMES OF MOVIE TITLES REQUESTED BY THE USER '''
 def title_extraction(movies_json):
+    
     if movies_json['data']['movie_count']!=1:
         movie_title_ls = []
         movie_title_json = movies_json['data']['movies']
+        
         for i in range(len(movie_title_json)):
             movie_title_ls.append(movie_title_json[i]['title_long'])         
     else:
+        
         return movies_json['data']['movies'][0]['title_long']
+    
     return movie_title_ls
     
 
