@@ -1,0 +1,8 @@
+# ALL IDEAS
+
+
+1. Movie Suggestions for Given Movie
+2. Get Details of the Given Movie --> DONE
+3. Get Highest Rated movies in Specified Genre --> DONE
+4. Search Movies by Genre --> DONE
+5. Downlod Movies by Quality --> DONE 
