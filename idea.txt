@@ -1,8 +1,0 @@
-# ALL IDEAS
-
-
-1. Movie Suggestions for Given Movie
-2. Get Details of the Given Movie
-3. Latest Releases of Movies
-4. Search Movies by Genre
-5. Downlod Movies by Quality -- DONE 
