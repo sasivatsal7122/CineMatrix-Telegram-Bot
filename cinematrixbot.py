@@ -68,7 +68,7 @@ def  download_movie(message):
                                 
                 bot.send_message(message.chat.id,"Here is Your Requested Torrent, Enjoy your movie night...")
                 
-                torrent_response = requests.get(torrent_link_ls[user_quality_choicee-1])
+                torrent_response = requests.get(torrent_link_ls[user_quality_choicee-1],)
                 open(f'torrents/{movie_title}.torrent', "wb").write(torrent_response.content)
                 
                 torrent_file = open(f'torrents/{movie_title}.torrent', 'rb')
@@ -304,7 +304,5 @@ def welcome_message(message):
 while True:
     try:
         bot.polling(none_stop=True)
-        # ConnectionError and ReadTimeout because of possible timout of the requests library
-        # maybe there are others, therefore Exception
     except Exception:
         time.sleep(15)
