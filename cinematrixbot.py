@@ -275,8 +275,11 @@ def Get_Highest_Rated_Movie_Releases_By_Genre(message):
     user_genres_choice = bot.send_message(message.chat.id,"Choose one: ")
     bot.register_next_step_handler(user_genres_choice, ghrmrbg_util_1)
 
-      
-  
+@bot.message_handler(commands=['Get_Similar_Movie_Recommendation'])
+def Get_Similar_Movie_Recommendation(message):
+    bot.send_message(message.chat.id,'My Boss is still working on this feature, it will be added soon')
+
+
 @bot.message_handler(commands=['start'])
 def welcome_message(message):
   greet_message = """
