@@ -68,7 +68,7 @@ def  download_movie(message):
                                 
                 bot.send_message(message.chat.id,"Here is Your Requested Torrent, Enjoy your movie night...")
                 
-                torrent_response = requests.get(torrent_link_ls[user_quality_choicee-1],)
+                torrent_response = requests.get(torrent_link_ls[user_quality_choicee-1])
                 open(f'torrents/{movie_title}.torrent', "wb").write(torrent_response.content)
                 
                 torrent_file = open(f'torrents/{movie_title}.torrent', 'rb')
@@ -301,8 +301,5 @@ def welcome_message(message):
   bot.send_message(message.chat.id, greet_message)
 
 
-while True:
-    try:
-        bot.polling(none_stop=True)
-    except Exception:
-        time.sleep(15)
+
+bot.polling(none_stop=True)
