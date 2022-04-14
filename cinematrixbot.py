@@ -301,4 +301,10 @@ def welcome_message(message):
   bot.send_message(message.chat.id, greet_message)
 
 
-bot.polling()
+while True:
+    try:
+        bot.polling(none_stop=True)
+        # ConnectionError and ReadTimeout because of possible timout of the requests library
+        # maybe there are others, therefore Exception
+    except Exception:
+        time.sleep(15)
