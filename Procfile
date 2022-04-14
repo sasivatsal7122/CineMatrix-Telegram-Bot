@@ -1,1 +1,1 @@
-web: python3 run main.py
+web: python3 cinematrixbot.py
