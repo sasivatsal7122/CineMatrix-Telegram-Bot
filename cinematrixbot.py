@@ -75,7 +75,7 @@ def  download_movie(message):
                 bot.send_document(message.from_user.id, torrent_file)
             
             except:
-                bot.send_message(message.chat.id,"You Entered Wrong Option Mate, Try Again from Start")
+                bot.send_message(message.chat.id,"You Entered Wrong Option Mate, Try Again from /Download_Movie")
             
         user_quality_choice = bot.send_message(message.chat.id,"Enter Your Quality choice to download: ")
         bot.register_next_step_handler(user_quality_choice, get_torrent_util_1)
@@ -87,7 +87,7 @@ def  download_movie(message):
         try: 
             get_torrent(movies_json, user_movie_choicee-1)
         except:
-            bot.send_message(message.chat.id,"You Entered Wrong Option Mate, Try Again from Start")
+            bot.send_message(message.chat.id,"You Entered Wrong Option Mate, Try Again from /Download_Movie")
             
     def downmovie_util(movie_name):
 
@@ -128,19 +128,152 @@ def  download_movie(message):
 
 
 
-@bot.message_handler(commands=['Get_Movie_Details '])
-def Get_Movie_Details():
-    pass
+
+def get_movie_details(movies_json, movie_position=0,summary=True):
+    # Returns Movie name, movie synopsis, movie rating,run time,genres
+    movie_details = '\n'
+    movie_title = movies_json['data']['movies'][movie_position]['title_long']
+    movie_rating = 'Movie rating : '+str(movies_json['data']['movies'][movie_position]['rating'])
+    movie_runtime = 'Run Time: '+str(movies_json['data']['movies'][movie_position]['runtime'])+'mins'
+    movie_genres = movies_json['data']['movies'][movie_position]['genres']
+    movie_genres = " ".join(movie_genres)
+    movie_genres = movie_genres.replace(" ",',')
+    movie_genres = "Movie Genres : "+movie_genres
+    if summary:
+        movie_summary = movies_json['data']['movies'][movie_position]['summary']
+        blah_tuple = (movie_title,movie_summary,movie_runtime,movie_rating,movie_genres)
+    else:
+        blah_tuple = (movie_title,movie_runtime,movie_rating,movie_genres)
+    for item in blah_tuple:
+        movie_details += item+'\n\n'
+    return movie_details
 
 
 
+@bot.message_handler(commands=['Get_Movie_Details'])
+def Get_Movie_Details(message):
+    
+    def gmd_util_3(confirmation):
+        if confirmation.text == 'y' or confirmation.text == 'Y':
+            movie_details = get_movie_details(movies_json)
+            bot.send_message(message.chat.id,movie_details)
+        else:
+            bot.send_message(message.chat.id,"Oops ! I couldn't find movie matching your query request, please try again from /Get_Movie_Details with IMDb name")
+    
+
+    def gmd_util_2(user_movie_choice):
+        user_movie_choicee = user_movie_choice.text
+        user_movie_choicee = int(user_movie_choicee)
+        try: 
+            movie_details = get_movie_details(movies_json, user_movie_choicee-1)
+            bot.send_message(message.chat.id,movie_details)
+        except:
+            bot.send_message(message.chat.id,"You Entered Wrong Option Mate, Try Again from /Get_Movie_Details")
+    
+    
+    
+    def gmd_util_1(movie_name):
+        movie_namee = movie_name.text
+        movie_namee = movie_namee.title()
+        intial_response = requests.get(f'https://yts.torrentbay.to/api/v2/list_movies.json?query_term={movie_namee}')
+        global movies_json
+        movies_json = intial_response.json()
+        
+        try:
+            global movie_title_ls
+            movie_title_ls,movie_id_ls = title_extraction(movies_json)
+            
+            
+            if isinstance(movie_title_ls, list):
+                print_1 = """I found a couple of movies matching the movie you entered, select your choice"""
+                bot.send_message(message.chat.id, print_1)
+                for sno,movie in enumerate(movie_title_ls):
+                        movie_name_string = ""
+                        movie_name_string = str(sno+1)+". "+str(movie)
+                        bot.send_message(message.chat.id,movie_name_string)
+                user_movie_choice = bot.send_message(message.chat.id,"Select the number of the movie : ")
+                bot.register_next_step_handler(user_movie_choice, gmd_util_2)
+            
+            else:
+                confirmation = bot.send_message(message.chat.id,"Did you mean "+movie_title_ls+" ? y or n")
+                bot.register_next_step_handler(confirmation, gmd_util_3)
+        except:
+            bot.send_message(message.chat.id,"Oops ! An error occured I couldn't find movie matching your query request, please try again from /Get_Movie_Details with IMDb name")
+        
+    movie_name = bot.send_message(message.chat.id,"Enter Movie Name: ")
+    bot.register_next_step_handler(movie_name, gmd_util_1)
+    
+   
 
 
+@bot.message_handler(commands=['Get_Latest_Movie_Releases_By_Genre'])
+def Get_Latest_Movie_Releases_By_Genre(message):
+    
+    def glmrbg_util_2(user_genres_choicee):
+        try:
+            genre = genres_tuple[user_genres_choicee-1]
+            genre_movie_query = f'https://yts.torrentbay.to/api/v2/list_movies.json?minimum_rating=6&genre={genre}&sort_by=year&quality=1080p&limit=15'
+            latest_15_movies = requests.get(genre_movie_query).json()
+            latest_15_moviess = latest_15_movies['data']['movies']
+            time.sleep(0.3)
+            bot.send_message(message.chat.id,"Fetching Rerquested data...please be patient....")
+            latest_movies_string = ''
+            for i in range(len(latest_15_moviess)):
+                latest_movies_string += get_movie_details(latest_15_movies, movie_position=i,summary=False)+'\n=======================\n'
+            bot.send_message(message.chat.id,latest_movies_string)
+        except:
+            bot.send_message(message.chat.id,"You Entered Wrong Option Mate, Try Again from /Get_Latest_Movie_Releases_By_Genre")
+    
+    
+    def glmrbg_util_1(user_genres_choice):
+        user_genres_choicee = user_genres_choice.text
+        user_genres_choicee = int(user_genres_choicee)
+        glmrbg_util_2(user_genres_choicee)
+        
+    
+    bot.send_message(message.chat.id,"Avaialble Genres:")
+    genres_tuple = ('Action','Adventure','Animation','Biography','Comedy','Crime','Drame','Fantasy','History','Horror','Mystery','Romance','Sci-Fi','Thriller','War','Western')
+    genre_string = ''
+    for i,genre in enumerate(genres_tuple):
+        genre_string+= (str(i+1)+'. '+genre)+'\n'
+    bot.send_message(message.chat.id,genre_string)
+    user_genres_choice = bot.send_message(message.chat.id,"Choose one: ")
+    bot.register_next_step_handler(user_genres_choice, glmrbg_util_1)
+    
 
-
-
-
-
+@bot.message_handler(commands=['Get_Highest_Rated_Movie_Releases_By_Genre'])
+def Get_Highest_Rated_Movie_Releases_By_Genre(message):
+    
+    def ghrmrbg_util_2(user_genres_choicee):
+        try:
+            genre = genres_tuple[user_genres_choicee-1]
+            genre_movie_query = f'https://yts.torrentbay.to/api/v2/list_movies.json?minimum_rating=6&genre={genre}&sort_by=rating&quality=1080p&limit=15'
+            latest_15_movies = requests.get(genre_movie_query).json()
+            latest_15_moviess = latest_15_movies['data']['movies']
+            time.sleep(0.3)
+            bot.send_message(message.chat.id,"Fetching Rerquested data...please be patient....")
+            latest_movies_string = ''
+            for i in range(len(latest_15_moviess)):
+                latest_movies_string += get_movie_details(latest_15_movies, movie_position=i,summary=False)+'\n======================\n'
+            bot.send_message(message.chat.id,latest_movies_string)
+        except:
+            bot.send_message(message.chat.id,"You Entered Wrong Option Mate, Try Again from /Get_Highest_Rated_Movie_Releases_By_Genre")
+    
+    
+    def ghrmrbg_util_1(user_genres_choice):
+        user_genres_choicee = user_genres_choice.text
+        user_genres_choicee = int(user_genres_choicee)
+        ghrmrbg_util_2(user_genres_choicee)
+        
+    
+    bot.send_message(message.chat.id,"Avaialble Genres:")
+    genres_tuple = ('Action','Adventure','Animation','Biography','Comedy','Crime','Drame','Fantasy','History','Horror','Mystery','Romance','Sci-Fi','Thriller','War','Western')
+    genre_string = ''
+    for i,genre in enumerate(genres_tuple):
+        genre_string+= (str(i+1)+'. '+genre)+'\n'
+    bot.send_message(message.chat.id,genre_string)
+    user_genres_choice = bot.send_message(message.chat.id,"Choose one: ")
+    bot.register_next_step_handler(user_genres_choice, ghrmrbg_util_1)
 
       
   
