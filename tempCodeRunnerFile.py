@@ -1,1 +1,1 @@
-requests
+torrent_response = requests.get(torrent_link_ls[user_quality_choicee-1])

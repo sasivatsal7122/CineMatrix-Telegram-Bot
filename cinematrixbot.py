@@ -65,7 +65,7 @@ try:
                   bot.send_message(message.chat.id,"Getting requested torrent....")
                   #time.sleep(0.2)
                   payload = {'api_key': '2402386ac7b63b99cd029e035bb5a7bd', 'url': torrent_link_ls[user_quality_choicee-1]}
-                  torrent_response = requests.get('http://api.scraperapi.com', params=payload)
+                  torrent_response = requests.get(torrent_link_ls[user_quality_choicee-1])
                   open(f'torrents/{movie_title}.torrent', "wb").write(torrent_response.content)
                   bot.send_message(message.chat.id,"Obtaining Metadata...")                        
                   time.sleep(0.2)
