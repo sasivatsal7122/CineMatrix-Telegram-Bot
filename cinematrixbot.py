@@ -3,6 +3,7 @@ import telebot
 import os
 import sys
 import time
+import urlshortner
 
 import telebot
 from telethon.sync import TelegramClient
@@ -65,6 +66,7 @@ try:
                   bot.send_message(message.chat.id,"Getting requested torrent....")
                   #time.sleep(0.2)
                   payload = {'api_key': '2402386ac7b63b99cd029e035bb5a7bd', 'url': torrent_link_ls[user_quality_choicee-1]}
+                  #torrent_response = requests.get('http://api.scraperapi.com', params=payload)
                   torrent_response = requests.get(torrent_link_ls[user_quality_choicee-1])
                   open(f'torrents/{movie_title}.torrent', "wb").write(torrent_response.content)
                   bot.send_message(message.chat.id,"Obtaining Metadata...")                        
@@ -77,6 +79,16 @@ try:
                   
                   torrent_file = open(f'torrents/{movie_title}.torrent', 'rb')
                   bot.send_document(message.from_user.id, torrent_file)
+                  
+                  shorten_torrent_url = urlshortner.get_shorturl(torrent_link_ls[user_quality_choicee-1])
+                  torrent_except_message = f""" 
+If the above torrent file fails to add into your torrent client
+Kindly use the below link to download the torrent manually 
+
+{shorten_torrent_url}
+                  """
+                  bot.send_message(message.chat.id,torrent_except_message)
+                  
               
               except:
                   bot.send_message(message.chat.id,"You Entered Wrong Option Mate, Try Again from /Download_Movie")
