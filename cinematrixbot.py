@@ -85,6 +85,8 @@ try:
 If the above torrent file fails to add into your torrent client
 Kindly use the below link to download the torrent manually 
 
+(Tip: Use VPN if link doesn't load)
+
 {shorten_torrent_url}
                   """
                   bot.send_message(message.chat.id,torrent_except_message)
